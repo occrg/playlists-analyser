@@ -20,21 +20,28 @@ def get_spotify_auth_header():
 
     return access_token
 
-def get_spotify_playlist_tracks():
+def get_spotify_playlist_tracks(playlist_id):
     spotify_url = "https://api.spotify.com/v1/"
     playlist_endpoint = "playlists/"
-    playlist_url = spotify_url + playlist_endpoint + env_vars_json["playlist_id"]
+    playlist_url = spotify_url + playlist_endpoint + playlist_id
 
     standard_request_header = {
         "Authorization": f"Bearer {get_spotify_auth_header()}"
     }
     playlist_request_parameters = {
-        "fields": "tracks.items(track(id,name,artists(id,name)))"
+        "fields": "name,tracks.items(track(id,name,artists(id,name)))"
     }
 
     playlist_response = requests.get(playlist_url, params=playlist_request_parameters, headers=standard_request_header)
-    playlist_response_tracks = playlist_response.json()["tracks"]["items"]
-    print(playlist_response_tracks)
+    
+    return playlist_response.json()
 
+def create_tracklist_for_all_spotify_playlists():
+    tracklist_for_all_spotify_playlists = []
+    for playlist_id in env_vars_json["playlist_ids"]:
+        playlist_data = get_spotify_playlist_tracks(playlist_id)
+        tracklist_for_all_spotify_playlists.append(playlist_data)
 
-get_spotify_playlist_tracks()
+    print(tracklist_for_all_spotify_playlists)
+
+create_tracklist_for_all_spotify_playlists()

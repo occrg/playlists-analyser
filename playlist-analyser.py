@@ -1,5 +1,6 @@
 import json
 import requests
+from itertools import repeat
 
 with open("variables.json", "r") as file:
     env_vars = file.read()
@@ -36,12 +37,17 @@ def get_spotify_playlist_tracks(playlist_id):
     
     return playlist_response.json()
 
+def flatten_song_data(playlist_track_data, playlist_name):
+    playlist_track_data.update({"playlist_name": playlist_name})
+    return playlist_track_data
+
 def create_tracklist_for_all_spotify_playlists():
     tracklist_for_all_spotify_playlists = []
     for playlist_id in env_vars_json["playlist_ids"]:
         playlist_data = get_spotify_playlist_tracks(playlist_id)
-        tracklist_for_all_spotify_playlists.append(playlist_data)
-
-    print(tracklist_for_all_spotify_playlists)
+        playlist_track_data = playlist_data["tracks"]["items"]
+        playlist_flat_track_data = list(map(flatten_song_data, playlist_track_data, repeat(playlist_data["name"])))
+        tracklist_for_all_spotify_playlists.extend(playlist_flat_track_data)
+    print(json.dumps(tracklist_for_all_spotify_playlists))
 
 create_tracklist_for_all_spotify_playlists()

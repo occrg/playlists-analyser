@@ -3,10 +3,9 @@
 A tool that analyses the songs in Spotify playlists and how the features of the songs differ in each.
 
 ## Current functionality
-The application currently takes a list of Spotify playlists and returns the Spotify IDs, artists and names of the songs within each playlists.
+The application currently takes a list of Spotify playlists and returns a flat list of tracks with their names, artists and qualities from the [Track Analysis API](https://rapidapi.com/soundnet-soundnet-default/api/track-analysis/playground/apiendpoint_78b81b32-03a1-4044-aa46-ac17aa2528fe).
 
 ## Future functionality
-1. The application should call the [Track Analysis API](https://rapidapi.com/soundnet-soundnet-default/api/track-analysis/playground/apiendpoint_78b81b32-03a1-4044-aa46-ac17aa2528fe) to get qualities of each track.
 1. Each playlist will have their tracks' qualities aggregated.
 1. The playlists aggregated qualities will be visualised.
 
@@ -17,6 +16,14 @@ The application currently takes a list of Spotify playlists and returns the Spot
 * You have [made a Spotify API application](https://developer.spotify.com/documentation/web-api/concepts/apps) that can access the Spotify Web API.
 
 ## Instructions
-1. Copy the `variables.example.json` file and give it the name `vairables.json` and replace the values with your own values.
+1. Copy the `variables.example.json` file and give it the name `variables.json` and replace the values with your own values.
 1. Run the `playlist-analyser.py` file.
+
+## To Do
+This is a list of things to do for the project, not including implementing the "future functionality" above.
+1. Store data from playlist analyser API to avoid hitting API limit.
+1. Add Spotify popularity and duration to qualities.
+1. Check whether happiness is the same as valence between different APIs.
+1. Ensure global constants are kept separately.
+1. Add error handling for API calls.
 

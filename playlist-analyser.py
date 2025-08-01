@@ -105,15 +105,14 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
 def run_script():
     with open("variables.json", "r") as file:
         env_vars = file.read()
+    env_vars_json = json.loads(env_vars)
 
     previous_tracklist_data = []
-
+    previous_tracklist_data_json = []
     if os.path.isfile("tracklist_data.json"):
         with open("tracklist_data.json", "r") as file:
             previous_tracklist_data = file.read()
-
-    env_vars_json = json.loads(env_vars)
-    previous_tracklist_data_json = json.loads(previous_tracklist_data)
+        previous_tracklist_data_json = json.loads(previous_tracklist_data)
 
     spotify_access_token = get_spotify_access_token(env_vars_json["spotify_auth"])
     tracklist_for_all_playlists = create_tracklist_for_all_spotify_playlists(spotify_access_token, env_vars_json["playlist_ids"])

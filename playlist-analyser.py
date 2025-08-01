@@ -27,7 +27,7 @@ def get_spotify_playlist_tracks(spotify_access_token, playlist_id):
         "Authorization": f"Bearer {spotify_access_token}"
     }
     playlist_request_parameters = {
-        "fields": "name,tracks.items(track(id,name,artists(id,name)))"
+        "fields": "name,tracks.items(track(id,name,popularity,duration_ms,artists(id,name)))"
     }
 
     playlist_response = requests.get(playlist_url, params=playlist_request_parameters, headers=standard_request_header)
@@ -84,7 +84,8 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
             "key": track_qualities["key"],
             "mode": track_qualities["mode"],
             "tempo": track_qualities["tempo"],
-            "popularity": track_qualities["popularity"],
+            "popularity": track["track"]["popularity"],
+            "duration_ms": track["track"]["duration_ms"],
             "energy": track_qualities["energy"],
             "danceability": track_qualities["danceability"],
             "happiness": track_qualities["happiness"],
@@ -95,6 +96,9 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
             "loudness": track_qualities["loudness"]
         }
     })
+
+    del track["track"]["popularity"]
+    del track["track"]["duration_ms"]
 
     return track
 

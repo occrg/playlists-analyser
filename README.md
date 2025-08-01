@@ -22,7 +22,6 @@ The application currently takes a list of Spotify playlists and returns a flat l
 
 ## To Do
 This is a list of things to do for the project, not including implementing the "future functionality" above.
-1. Add Spotify popularity and duration to qualities.
 1. Check whether happiness is the same as valence between different APIs.
 1. Ensure global constants are kept separately.
 1. Add error handling for API calls.

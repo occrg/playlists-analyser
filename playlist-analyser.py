@@ -2,6 +2,7 @@ import json
 import requests
 from itertools import repeat
 import time
+import os.path
 
 def get_spotify_access_token(spotify_auth):
     url = "https://accounts.spotify.com/api/token"
@@ -46,7 +47,7 @@ def create_tracklist_for_all_spotify_playlists(spotify_access_token, playlist_id
         tracklist_for_all_spotify_playlists.extend(playlist_flat_track_data)
     return tracklist_for_all_spotify_playlists
 
-def get_track_qualities(track_analysis_auth, track):
+def get_track_qualities_from_api(track_analysis_auth, track):
     track_analysis_url = "https://track-analysis.p.rapidapi.com/pktx/"
     track_analysis_endpoint = "spotify/"
     track_url = track_analysis_url + track_analysis_endpoint + track["track"]["id"]
@@ -61,9 +62,22 @@ def get_track_qualities(track_analysis_auth, track):
 
     return track_analysis_response.json()
 
+def get_track_qualities_from_previous(previous_tracklist_data, current_track):
+    track_analysis = {}
+    previous_tracklist_data_filtered = [track for track in previous_tracklist_data if track["track"]["id"] == current_track["track"]["id"]]
+    if len(previous_tracklist_data_filtered) == 1:
+        track_analysis = previous_tracklist_data_filtered[0]["track_qualities"]
+    return track_analysis
 
-def add_track_quality_to_tracklist(track_analysis_auth, track):
-    track_qualities = get_track_qualities(track_analysis_auth, track)
+def get_track_qualities(track_analysis_auth, track, previous_tracklist_data):
+    track_analysis = {}
+    track_analysis = get_track_qualities_from_previous(previous_tracklist_data, track)
+    if track_analysis == {}:
+        track_analysis = get_track_qualities_from_api(track_analysis_auth, track)
+    return track_analysis
+
+def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklist_data):
+    track_qualities = get_track_qualities(track_analysis_auth, track, previous_tracklist_data)
     
     track.update({
         "track_qualities": {
@@ -87,13 +101,21 @@ def add_track_quality_to_tracklist(track_analysis_auth, track):
 def run_script():
     with open("variables.json", "r") as file:
         env_vars = file.read()
-    
+
+    previous_tracklist_data = []
+
+    if os.path.isfile("tracklist_data.json"):
+        with open("tracklist_data.json", "r") as file:
+            previous_tracklist_data = file.read()
+
     env_vars_json = json.loads(env_vars)
+    previous_tracklist_data_json = json.loads(previous_tracklist_data)
 
     spotify_access_token = get_spotify_access_token(env_vars_json["spotify_auth"])
     tracklist_for_all_playlists = create_tracklist_for_all_spotify_playlists(spotify_access_token, env_vars_json["playlist_ids"])
-    tracklist_for_all_playlists_with_track_qualities = list(map(add_track_quality_to_tracklist, repeat(env_vars_json["x_rapid_auth"]), tracklist_for_all_playlists))
+    tracklist_for_all_playlists_with_track_qualities = list(map(add_track_quality_to_tracklist, repeat(env_vars_json["x_rapid_auth"]), tracklist_for_all_playlists, repeat(previous_tracklist_data_json)))
 
-    print(json.dumps(tracklist_for_all_playlists_with_track_qualities))
+    with open("tracklist_data.json", "w+") as file:
+        file.write(json.dumps(tracklist_for_all_playlists_with_track_qualities))
 
 run_script()

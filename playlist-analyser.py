@@ -18,7 +18,7 @@ def get_spotify_access_token(spotify_auth):
 
     return access_token
 
-def get_spotify_playlist_tracks(spotify_access_token, playlist_id):
+def get_spotify_playlist_tracks(spotify_access_token, playlist_id):    
     spotify_url = "https://api.spotify.com/v1/"
     playlist_endpoint = "playlists/"
     playlist_url = spotify_url + playlist_endpoint + playlist_id
@@ -31,19 +31,25 @@ def get_spotify_playlist_tracks(spotify_access_token, playlist_id):
     }
 
     playlist_response = requests.get(playlist_url, params=playlist_request_parameters, headers=standard_request_header)
-    
-    return playlist_response.json()
+    playlist_response_json = playlist_response.json()
+    playlist_response_json.update({ "playlist_id": playlist_id })
+    return playlist_response_json
 
-def flatten_song_data(playlist_track_data, playlist_name):
-    playlist_track_data.update({"playlist_name": playlist_name})
+def create_playlist_id_name_dict(spotify_playlist_data):
+    playlist_id_name_dict = {}
+    for spotify_playlist in spotify_playlist_data:
+        playlist_id_name_dict.update({ spotify_playlist["playlist_id"]: spotify_playlist["name"] })
+    return playlist_id_name_dict
+
+def add_playlist_id_to_track(playlist_track_data, playlist_id):
+    playlist_track_data.update({ "playlist_id": playlist_id })
     return playlist_track_data
 
-def create_tracklist_for_all_spotify_playlists(spotify_access_token, playlist_ids):
+def create_tracklist_from_playlist_data(spotify_playlist_data):
     tracklist_for_all_spotify_playlists = []
-    for playlist_id in playlist_ids:
-        playlist_data = get_spotify_playlist_tracks(spotify_access_token, playlist_id)
+    for playlist_data in spotify_playlist_data:
         playlist_track_data = playlist_data["tracks"]["items"]
-        playlist_flat_track_data = list(map(flatten_song_data, playlist_track_data, repeat(playlist_data["name"])))
+        playlist_flat_track_data = list(map(add_playlist_id_to_track, playlist_track_data, repeat(playlist_data["playlist_id"])))
         tracklist_for_all_spotify_playlists.extend(playlist_flat_track_data)
     return tracklist_for_all_spotify_playlists
 
@@ -115,10 +121,12 @@ def run_script():
         previous_tracklist_data_json = json.loads(previous_tracklist_data)
 
     spotify_access_token = get_spotify_access_token(env_vars_json["spotify_auth"])
-    tracklist_for_all_playlists = create_tracklist_for_all_spotify_playlists(spotify_access_token, env_vars_json["playlist_ids"])
-    tracklist_for_all_playlists_with_track_qualities = list(map(add_track_quality_to_tracklist, repeat(env_vars_json["x_rapid_auth"]), tracklist_for_all_playlists, repeat(previous_tracklist_data_json)))
+    spotify_playlist_data = list(map(get_spotify_playlist_tracks, repeat(spotify_access_token), env_vars_json["playlist_ids"]))
+    playlist_id_name_dict = create_playlist_id_name_dict(spotify_playlist_data)
+    tracklist = create_tracklist_from_playlist_data(spotify_playlist_data)
+    tracklist = list(map(add_track_quality_to_tracklist, repeat(env_vars_json["x_rapid_auth"]), tracklist, repeat(previous_tracklist_data_json)))
 
     with open("tracklist_data.json", "w+") as file:
-        file.write(json.dumps(tracklist_for_all_playlists_with_track_qualities))
+        file.write(json.dumps(tracklist))
 
 run_script()

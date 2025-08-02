@@ -3,11 +3,12 @@
 A tool that analyses the songs in Spotify playlists and how the features of the songs differ in each.
 
 ## Current functionality
-The application currently takes a list of Spotify playlists and returns a flat list of tracks with their names, artists and qualities from the [Track Analysis API](https://rapidapi.com/soundnet-soundnet-default/api/track-analysis/playground/apiendpoint_78b81b32-03a1-4044-aa46-ac17aa2528fe).
+The application currently takes a list of Spotify playlists and returns a flat list of tracks with their names, artists and qualities from the [Track Analysis API](https://rapidapi.com/soundnet-soundnet-default/api/track-analysis/playground/apiendpoint_78b81b32-03a1-4044-aa46-ac17aa2528fe). It then aggregates the tracks' data by their playlist.
 
 ## Future functionality
-1. Each playlist will have their tracks' qualities aggregated.
 1. The playlists aggregated qualities will be visualised.
+1. More data could be obtained to be visualised. For example, most common keys used, most commmon artists, most common release month/season.
+1. Different additions could be made to the visualisations. For example, plotting individual track qualities on their release dates (instead of on an x-axis point representing the whole playlist) and using other aggregations such as min, max, median, deviation.
 
 ## Pre-requisites
 * You have Python installed on your computer.

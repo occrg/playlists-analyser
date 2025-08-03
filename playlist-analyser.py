@@ -5,24 +5,33 @@ import time
 import os.path
 import statistics
 
-def get_spotify_access_token(spotify_auth):
-    url = "https://accounts.spotify.com/api/token"
+SPOTIFY_API_URL = "https://api.spotify.com/v1/"
+SPOTIFY_API_PLAYLIST_ENDPOINT_URL = SPOTIFY_API_URL + "playlists/"
+SPOTIFY_AUTH_ENDPOINT_URL = "https://accounts.spotify.com/api/token"
 
+TRACK_ANALYSIS_API_URL = "https://track-analysis.p.rapidapi.com/pktx/"
+TRACK_ANALYSIS_API_GET_ANALYSIS_ENDPOINT_URL = TRACK_ANALYSIS_API_URL + "spotify/"
+
+TRACKLIST_DATA_FILE_PATH = "tracklist_data.json"
+ENV_VARIABLES_FILE_PATH = "variables.json"
+
+ATTRIBUTES_TO_FIND_MEAN_FOR = ["tempo", "popularity", "duration_ms", "energy", "danceability", "happiness", "acousticness", "instrumentalness", "liveness", "speechiness"]
+
+
+def get_spotify_access_token(spotify_auth):
     auth_form_data = {
         "grant_type": "client_credentials",
         "client_id": spotify_auth["client_id"],
         "client_secret": spotify_auth["client_secret"]
     }
 
-    auth_response = requests.post(url, data=auth_form_data)
+    auth_response = requests.post(SPOTIFY_AUTH_ENDPOINT_URL, data=auth_form_data)
     access_token = auth_response.json()["access_token"]
 
     return access_token
 
 def get_spotify_playlist_tracks(spotify_access_token, playlist_id):    
-    spotify_url = "https://api.spotify.com/v1/"
-    playlist_endpoint = "playlists/"
-    playlist_url = spotify_url + playlist_endpoint + playlist_id
+    playlist_url = SPOTIFY_API_PLAYLIST_ENDPOINT_URL + playlist_id
 
     standard_request_header = {
         "Authorization": f"Bearer {spotify_access_token}"
@@ -59,9 +68,7 @@ def create_tracklist_from_playlist_data(spotify_playlist_data):
     return tracklist_for_all_spotify_playlists
 
 def get_track_qualities_from_api(track_analysis_auth, track):
-    track_analysis_url = "https://track-analysis.p.rapidapi.com/pktx/"
-    track_analysis_endpoint = "spotify/"
-    track_url = track_analysis_url + track_analysis_endpoint + track["track"]["id"]
+    track_url = TRACK_ANALYSIS_API_GET_ANALYSIS_ENDPOINT_URL + track["track"]["id"]
     
     standard_request_header = {
         "x-rapidapi-key": track_analysis_auth["api_key"]
@@ -114,10 +121,9 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
     return track
 
 def calculate_playlist_aggregated_qualities(playlist_data, tracklist):
-    key_names_to_find_mean_for = ["tempo", "popularity", "duration_ms", "energy", "danceability", "happiness", "acousticness", "instrumentalness", "liveness", "speechiness"]
     for playlist_id in playlist_data.keys():
         tracks_in_playlist = [track for track in tracklist if track["playlist_id"] == playlist_id]
-        for key_name in key_names_to_find_mean_for:
+        for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
             key_values_in_playlist = [dict["track_qualities"][key_name] for dict in tracks_in_playlist]
             playlist_data[playlist_id]["aggregated_track_qualities"].update({
                 key_name: {
@@ -130,8 +136,8 @@ def calculate_playlist_aggregated_qualities(playlist_data, tracklist):
 def get_playlist_data(spotify_auth, x_rapid_auth, playlist_ids):
     previous_tracklist_data = []
     previous_tracklist_data_json = []
-    if os.path.isfile("tracklist_data.json"):
-        with open("tracklist_data.json", "r") as file:
+    if os.path.isfile(TRACKLIST_DATA_FILE_PATH):
+        with open(TRACKLIST_DATA_FILE_PATH, "r") as file:
             previous_tracklist_data = file.read()
         previous_tracklist_data_json = json.loads(previous_tracklist_data)
 
@@ -141,14 +147,14 @@ def get_playlist_data(spotify_auth, x_rapid_auth, playlist_ids):
     tracklist = create_tracklist_from_playlist_data(spotify_playlist_data)
     tracklist = list(map(add_track_quality_to_tracklist, repeat(x_rapid_auth), tracklist, repeat(previous_tracklist_data_json)))
 
-    with open("tracklist_data.json", "w+") as file:
+    with open(TRACKLIST_DATA_FILE_PATH, "w+") as file:
         file.write(json.dumps(tracklist))
 
     playlist_data = calculate_playlist_aggregated_qualities(playlist_data, tracklist)
     return playlist_data
 
 def run_script():
-    with open("variables.json", "r") as file:
+    with open(ENV_VARIABLES_FILE_PATH, "r") as file:
         env_vars = file.read()
     env_vars_json = json.loads(env_vars)
 

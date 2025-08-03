@@ -23,7 +23,6 @@ The application currently takes a list of Spotify playlists and returns a flat l
 
 ## To Do
 This is a list of things to do for the project, not including implementing the "future functionality" above.
-1. Ensure global constants are kept separately.
 1. Add error handling for API calls.
 1. Add limit to how many times the Track Analysis API can be called.
 1. Store data from [other Track Analysis API](https://rapidapi.com/music-metrics-music-metrics-default/api/spotify-audio-features-track-analysis), compare (including check whether happiness is the same as valence between different APIs) and use both in visualisations to see if either set of data produces better visualisations.

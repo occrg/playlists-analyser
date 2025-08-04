@@ -7,6 +7,7 @@ import statistics
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 SPOTIFY_API_URL = "https://api.spotify.com/v1/"
 SPOTIFY_API_PLAYLIST_ENDPOINT_URL = SPOTIFY_API_URL + "playlists/"
@@ -15,6 +16,7 @@ SPOTIFY_AUTH_ENDPOINT_URL = "https://accounts.spotify.com/api/token"
 TRACK_ANALYSIS_API_URL = "https://track-analysis.p.rapidapi.com/pktx/"
 TRACK_ANALYSIS_API_GET_ANALYSIS_ENDPOINT_URL = TRACK_ANALYSIS_API_URL + "spotify/"
 
+OUTPUT_FOLDER_FILE_PATH = "outputs/"
 TRACKLIST_DATA_FILE_PATH = "tracklist_data.json"
 ENV_VARIABLES_FILE_PATH = "variables.json"
 
@@ -183,7 +185,7 @@ def export_tracklist_to_csv(tracklist, playlist_data):
 
         tracklist_csv.append(this_tracklist)
 
-        with open('tracklist_csv.csv', 'w', newline='') as f:
+        with open(OUTPUT_FOLDER_FILE_PATH + "tracklist.csv", "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerows(tracklist_csv)
 
@@ -202,12 +204,14 @@ def visualise_playlist_data(playlist_data):
         ax.set_ylim(ymin=0.0)
         ax.set_xlabel("Playlist")
         ax.set_ylabel(key_name)
-        fig.savefig(key_name + "_visualisation")
+        fig.savefig(OUTPUT_FOLDER_FILE_PATH + key_name + "_visualisation")
 
 def run_script():
     with open(ENV_VARIABLES_FILE_PATH, "r") as file:
         env_vars = file.read()
     env_vars_json = json.loads(env_vars)
+
+    os.makedirs(OUTPUT_FOLDER_FILE_PATH, exist_ok=True)
 
     spotify_playlist_data = get_spotify_playlist_data(env_vars_json["spotify_auth"], env_vars_json["playlist_ids"])
     playlist_id_name_dict = create_playlist_data_dict(spotify_playlist_data)

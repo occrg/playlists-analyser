@@ -40,7 +40,7 @@ def get_spotify_playlist_tracks(spotify_access_token, playlist_id):
         "Authorization": f"Bearer {spotify_access_token}"
     }
     playlist_request_parameters = {
-        "fields": "name,tracks.items(track(id,name,popularity,duration_ms,artists(id,name)))"
+        "fields": "name,tracks.items(track(id,name,popularity,duration_ms,artists(id,name),album(id,name,album_type,release_date,release_date_precision)))"
     }
 
     playlist_response = requests.get(playlist_url, params=playlist_request_parameters, headers=standard_request_header)
@@ -156,13 +156,17 @@ def get_playlist_tracklist(spotify_playlist_data, x_rapid_auth):
     return tracklist
 
 def export_tracklist_to_csv(tracklist, playlist_data):
-    tracklist_csv = [["track_id", "track_name", "playlist_id", "playlist_name", "key", "mode", "tempo", "popularity", "duration_min", "energy", "danceability", "happiness", "acousticness", "instrumentalness", "liveness", "speechiness", "loudness"]]
+    tracklist_csv = [["track_id", "track_name", "playlist_id", "playlist_name", "release_id", "release_name", "release_type", "release_date", "key", "mode", "tempo", "popularity", "duration_min", "energy", "danceability", "happiness", "acousticness", "instrumentalness", "liveness", "speechiness", "loudness_dB"]]
     for track in tracklist:
         this_tracklist = []
         this_tracklist.append(track["track"]["id"])
         this_tracklist.append(track["track"]["name"])
         this_tracklist.append(track["playlist_id"])
         this_tracklist.append(playlist_data[track["playlist_id"]]["name"])
+        this_tracklist.append(track["track"]["album"]["id"])
+        this_tracklist.append(track["track"]["album"]["name"])
+        this_tracklist.append(track["track"]["album"]["album_type"])
+        this_tracklist.append(track["track"]["album"]["release_date"])
         this_tracklist.append(track["track_qualities"]["key"])
         this_tracklist.append(track["track_qualities"]["mode"])
         this_tracklist.append(track["track_qualities"]["tempo"])

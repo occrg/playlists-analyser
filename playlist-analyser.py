@@ -4,6 +4,7 @@ from itertools import repeat
 import time
 import os.path
 import statistics
+import csv
 
 SPOTIFY_API_URL = "https://api.spotify.com/v1/"
 SPOTIFY_API_PLAYLIST_ENDPOINT_URL = SPOTIFY_API_URL + "playlists/"
@@ -152,6 +153,34 @@ def get_playlist_tracklist(spotify_playlist_data, x_rapid_auth):
 
     return tracklist
 
+def export_tracklist_to_csv(tracklist, playlist_data):
+    tracklist_csv = [["track_id", "track_name", "playlist_id", "playlist_name", "key", "mode", "tempo", "popularity", "duration_min", "energy", "danceability", "happiness", "acousticness", "instrumentalness", "liveness", "speechiness", "loudness"]]
+    for track in tracklist:
+        this_tracklist = []
+        this_tracklist.append(track["track"]["id"])
+        this_tracklist.append(track["track"]["name"])
+        this_tracklist.append(track["playlist_id"])
+        this_tracklist.append(playlist_data[track["playlist_id"]]["name"])
+        this_tracklist.append(track["track_qualities"]["key"])
+        this_tracklist.append(track["track_qualities"]["mode"])
+        this_tracklist.append(track["track_qualities"]["tempo"])
+        this_tracklist.append(track["track_qualities"]["popularity"])
+        this_tracklist.append(track["track_qualities"]["duration_ms"] / 60000)
+        this_tracklist.append(track["track_qualities"]["energy"])
+        this_tracklist.append(track["track_qualities"]["danceability"])
+        this_tracklist.append(track["track_qualities"]["happiness"])
+        this_tracklist.append(track["track_qualities"]["acousticness"])
+        this_tracklist.append(track["track_qualities"]["instrumentalness"])
+        this_tracklist.append(track["track_qualities"]["liveness"])
+        this_tracklist.append(track["track_qualities"]["speechiness"])
+        this_tracklist.append(track["track_qualities"]["loudness"][1:-3])
+
+        tracklist_csv.append(this_tracklist)
+
+        with open('tracklist_csv.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(tracklist_csv)
+
 def export_tracklist_to_json_file(tracklist):
     with open(TRACKLIST_DATA_FILE_PATH, "w+") as file:
         file.write(json.dumps(tracklist))
@@ -165,6 +194,7 @@ def run_script():
     playlist_id_name_dict = create_playlist_data_dict(spotify_playlist_data)
     tracklist = get_playlist_tracklist(spotify_playlist_data, env_vars_json["x_rapid_auth"])
     export_tracklist_to_json_file(tracklist)
+    export_tracklist_to_csv(tracklist, playlist_id_name_dict)
 
     playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist)
     print(json.dumps(playlist_data))

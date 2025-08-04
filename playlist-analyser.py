@@ -120,8 +120,9 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
 
     return track
 
-def calculate_playlist_aggregated_qualities(playlist_data, tracklist):
-    for playlist_id in playlist_data.keys():
+def calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist):
+    playlist_data = playlist_id_name_dict
+    for playlist_id in playlist_id_name_dict.keys():
         tracks_in_playlist = [track for track in tracklist if track["playlist_id"] == playlist_id]
         for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
             key_values_in_playlist = [dict["track_qualities"][key_name] for dict in tracks_in_playlist]
@@ -133,7 +134,12 @@ def calculate_playlist_aggregated_qualities(playlist_data, tracklist):
             })
     return playlist_data
 
-def get_playlist_data(spotify_auth, x_rapid_auth, playlist_ids):
+def get_spotify_playlist_data(spotify_auth, playlist_ids):
+    spotify_access_token = get_spotify_access_token(spotify_auth)
+    spotify_playlist_data = list(map(get_spotify_playlist_tracks, repeat(spotify_access_token), playlist_ids))
+    return spotify_playlist_data
+
+def get_playlist_tracklist(spotify_playlist_data, x_rapid_auth):
     previous_tracklist_data = []
     previous_tracklist_data_json = []
     if os.path.isfile(TRACKLIST_DATA_FILE_PATH):
@@ -141,25 +147,26 @@ def get_playlist_data(spotify_auth, x_rapid_auth, playlist_ids):
             previous_tracklist_data = file.read()
         previous_tracklist_data_json = json.loads(previous_tracklist_data)
 
-    spotify_access_token = get_spotify_access_token(spotify_auth)
-    spotify_playlist_data = list(map(get_spotify_playlist_tracks, repeat(spotify_access_token), playlist_ids))
-    playlist_data = create_playlist_data_dict(spotify_playlist_data)
     tracklist = create_tracklist_from_playlist_data(spotify_playlist_data)
     tracklist = list(map(add_track_quality_to_tracklist, repeat(x_rapid_auth), tracklist, repeat(previous_tracklist_data_json)))
 
+    return tracklist
+
+def export_tracklist_to_json_file(tracklist):
     with open(TRACKLIST_DATA_FILE_PATH, "w+") as file:
         file.write(json.dumps(tracklist))
-
-    playlist_data = calculate_playlist_aggregated_qualities(playlist_data, tracklist)
-    return playlist_data
 
 def run_script():
     with open(ENV_VARIABLES_FILE_PATH, "r") as file:
         env_vars = file.read()
     env_vars_json = json.loads(env_vars)
 
-    playlist_data = get_playlist_data(env_vars_json["spotify_auth"], env_vars_json["x_rapid_auth"], env_vars_json["playlist_ids"])
+    spotify_playlist_data = get_spotify_playlist_data(env_vars_json["spotify_auth"], env_vars_json["playlist_ids"])
+    playlist_id_name_dict = create_playlist_data_dict(spotify_playlist_data)
+    tracklist = get_playlist_tracklist(spotify_playlist_data, env_vars_json["x_rapid_auth"])
+    export_tracklist_to_json_file(tracklist)
 
+    playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist)
     print(json.dumps(playlist_data))
 
 run_script()

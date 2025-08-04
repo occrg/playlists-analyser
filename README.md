@@ -1,6 +1,6 @@
 # Playlists Analyser
 ## Description
-A tool that analyses the songs in Spotify playlists and how the features of the songs differ in each.
+A tool that visualises the qualities of songs in a set of Spotify playlists and converts this into a readable form to create a physical manifestation of this visualisation. 
 
 ## Current functionality
 The application currently takes a list of Spotify playlists and returns a flat list of tracks with their names, artists and qualities from the [Track Analysis API](https://rapidapi.com/soundnet-soundnet-default/api/track-analysis/playground/apiendpoint_78b81b32-03a1-4044-aa46-ac17aa2528fe). It then aggregates the tracks' data by their playlist.
@@ -8,9 +8,10 @@ The application currently takes a list of Spotify playlists and returns a flat l
 The tracklist data exports to a csv so visualisations can be experimented with outside of a Python environment. The aggregated playlist data is visualised in some basic graphs and saved as images.
 
 ## Future functionality
-1. The playlists aggregated qualities will be visualised.
-1. More data could be obtained to be visualised. For example, most common keys used, most commmon artists, most common release month/season.
-1. Different additions could be made to the visualisations. For example, plotting individual track qualities on their release dates (instead of on an x-axis point representing the whole playlist) and using other aggregations such as min, max, median, deviation.
+1. Create tree map or bar chart of artists with artist images in background.
+1. All visualisations will be converted into a form readable by software that engraves the graphs into a material.
+1. Other additions to existing charts may be experimented with. For example, plotting the plotting individual track qualities on their release dates (instead of on an x-axis point representing the whole playlist) and using other aggregations such as min, max, median, deviation.
+1. Charts may be made out of other data. For example, most common keys used, most common release month/season.
 
 ## Pre-requisites
 * You have Python installed on your computer.
@@ -25,6 +26,9 @@ The tracklist data exports to a csv so visualisations can be experimented with o
 
 ## To Do
 This is a list of things to do for the project, not including implementing the "future functionality" above.
+1. Add output file folder and add it to .gitignore.
+1. Change graphs into scatters with appropriate trend lines.
+1. Change chart positioning, gridlines and legends to be appropriate so the graphs can be look good when stacked on top of each other.
 1. Add error handling for API calls.
 1. Add limit to how many times the Track Analysis API can be called.
 1. Store data from [other Track Analysis API](https://rapidapi.com/music-metrics-music-metrics-default/api/spotify-audio-features-track-analysis), compare (including check whether happiness is the same as valence between different APIs) and use both in visualisations to see if either set of data produces better visualisations.

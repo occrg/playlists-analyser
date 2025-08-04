@@ -1,3 +1,5 @@
 *.ipynb*
 variables.json
 tracklist_data.json
+*_visualisation.png
+tracklist_csv.csv

@@ -5,6 +5,8 @@ import time
 import os.path
 import statistics
 import csv
+import matplotlib.pyplot as plt
+import numpy as np
 
 SPOTIFY_API_URL = "https://api.spotify.com/v1/"
 SPOTIFY_API_PLAYLIST_ENDPOINT_URL = SPOTIFY_API_URL + "playlists/"
@@ -185,6 +187,19 @@ def export_tracklist_to_json_file(tracklist):
     with open(TRACKLIST_DATA_FILE_PATH, "w+") as file:
         file.write(json.dumps(tracklist))
 
+def visualise_playlist_data(playlist_data):
+    playlist_names = [dict["name"] for dict in playlist_data.values()]
+    xpoints = np.array(playlist_names)
+    for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
+        mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
+        ypoints = np.array(mean_values)
+        fig, ax = plt.subplots()
+        ax.plot(xpoints, ypoints)
+        ax.set_ylim(ymin=0.0)
+        ax.set_xlabel("Playlist")
+        ax.set_ylabel(key_name)
+        fig.savefig(key_name + "_visualisation")
+
 def run_script():
     with open(ENV_VARIABLES_FILE_PATH, "r") as file:
         env_vars = file.read()
@@ -197,6 +212,6 @@ def run_script():
     export_tracklist_to_csv(tracklist, playlist_id_name_dict)
 
     playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist)
-    print(json.dumps(playlist_data))
+    visualise_playlist_data(playlist_data)
 
 run_script()

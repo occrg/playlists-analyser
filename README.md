@@ -5,7 +5,7 @@ A tool that analyses the songs in Spotify playlists and how the features of the 
 ## Current functionality
 The application currently takes a list of Spotify playlists and returns a flat list of tracks with their names, artists and qualities from the [Track Analysis API](https://rapidapi.com/soundnet-soundnet-default/api/track-analysis/playground/apiendpoint_78b81b32-03a1-4044-aa46-ac17aa2528fe). It then aggregates the tracks' data by their playlist.
 
-The tracklist data exports to a csv so visualisations can be experimented with outside of a Python environment.
+The tracklist data exports to a csv so visualisations can be experimented with outside of a Python environment. The aggregated playlist data is visualised in some basic graphs and saved as images.
 
 ## Future functionality
 1. The playlists aggregated qualities will be visualised.

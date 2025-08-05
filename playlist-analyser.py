@@ -195,14 +195,19 @@ def export_tracklist_to_json_file(tracklist):
 
 def visualise_playlist_data(playlist_data):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
-    xpoints = np.array(playlist_names)
+    xticks = list(range(len(playlist_names)))
+    xpoints = np.array(xticks)
     for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
         ypoints = np.array(mean_values)
+        z = np.polyfit(xpoints, ypoints, 1)
+        p = np.poly1d(z)
         fig, ax = plt.subplots()
-        ax.plot(xpoints, ypoints)
+        ax.scatter(xpoints, ypoints)
+        ax.plot(xpoints, p(xpoints))
         ax.set_ylim(ymin=0.0)
         ax.set_xlabel("Playlist")
+        ax.set_xticks(xticks, playlist_names)
         ax.set_ylabel(key_name)
         fig.savefig(OUTPUT_FOLDER_FILE_PATH + key_name + "_visualisation")
 

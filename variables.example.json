@@ -17,5 +17,37 @@
         "165TE4aCfvWkTpXjc0ayJE",
         "0jvSEsBpf0MAOL0YuZcWGU",
         "4T1ZHc7xRNXTg2So1ZNWBc"
-    ]
+    ],
+    "attributes_to_find_mean_for": {
+        "tempo": {
+            "polynomial_degree": 3
+        },
+        "popularity": {
+            "polynomial_degree": 2
+        },
+        "duration_ms": {
+            "polynomial_degree": 2
+        },
+        "energy": {
+            "polynomial_degree": 2
+        },
+        "danceability": {
+            "polynomial_degree": 1
+        },
+        "happiness": {
+            "polynomial_degree": 2
+        },
+        "acousticness": {
+            "polynomial_degree": 2
+        },
+        "instrumentalness": {
+            "polynomial_degree": 1
+        },
+        "liveness": {
+            "polynomial_degree": 2
+        },
+        "speechiness": {
+            "polynomial_degree": 2
+        }
+    }
 }

@@ -20,8 +20,6 @@ OUTPUT_FOLDER_FILE_PATH = "outputs/"
 TRACKLIST_DATA_FILE_PATH = "tracklist_data.json"
 ENV_VARIABLES_FILE_PATH = "variables.json"
 
-ATTRIBUTES_TO_FIND_MEAN_FOR = ["tempo", "popularity", "duration_ms", "energy", "danceability", "happiness", "acousticness", "instrumentalness", "liveness", "speechiness"]
-
 
 def get_spotify_access_token(spotify_auth):
     auth_form_data = {
@@ -125,11 +123,11 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
 
     return track
 
-def calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist):
+def calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist, attributes_to_find_mean_for):
     playlist_data = playlist_id_name_dict
     for playlist_id in playlist_id_name_dict.keys():
         tracks_in_playlist = [track for track in tracklist if track["playlist_id"] == playlist_id]
-        for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
+        for key_name in attributes_to_find_mean_for.keys():
             key_values_in_playlist = [dict["track_qualities"][key_name] for dict in tracks_in_playlist]
             playlist_data[playlist_id]["aggregated_track_qualities"].update({
                 key_name: {
@@ -193,16 +191,16 @@ def export_tracklist_to_json_file(tracklist):
     with open(TRACKLIST_DATA_FILE_PATH, "w+") as file:
         file.write(json.dumps(tracklist))
 
-def visualise_playlist_data(playlist_data):
+def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
     xticks = list(range(len(playlist_names)))
     xpoints = np.array(xticks)
-    for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
+    for key_name in attributes_to_find_mean_for.keys():
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
         ypoints = np.array(mean_values)
 
         x_for_trend_lines = np.arange(0, len(playlist_names), 0.01)
-        polyreg = np.polyfit(xpoints, ypoints, 3)
+        polyreg = np.polyfit(xpoints, ypoints, attributes_to_find_mean_for[key_name]["polynomial_degree"])
         polypred = np.poly1d(polyreg)
         predp = polypred(x_for_trend_lines)
 
@@ -228,7 +226,7 @@ def run_script():
     export_tracklist_to_json_file(tracklist)
     export_tracklist_to_csv(tracklist, playlist_id_name_dict)
 
-    playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist)
-    visualise_playlist_data(playlist_data)
+    playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist, env_vars_json["attributes_to_find_mean_for"])
+    visualise_playlist_data(playlist_data, env_vars_json["attributes_to_find_mean_for"])
 
 run_script()

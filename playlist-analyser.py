@@ -200,11 +200,15 @@ def visualise_playlist_data(playlist_data):
     for key_name in ATTRIBUTES_TO_FIND_MEAN_FOR:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
         ypoints = np.array(mean_values)
-        z = np.polyfit(xpoints, ypoints, 1)
-        p = np.poly1d(z)
+
+        x_for_trend_lines = np.arange(0, len(playlist_names), 0.01)
+        polyreg = np.polyfit(xpoints, ypoints, 3)
+        polypred = np.poly1d(polyreg)
+        predp = polypred(x_for_trend_lines)
+
         fig, ax = plt.subplots()
         ax.scatter(xpoints, ypoints)
-        ax.plot(xpoints, p(xpoints))
+        ax.plot(x_for_trend_lines, predp)
         ax.set_ylim(ymin=0.0)
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)

@@ -20,34 +20,48 @@
     ],
     "attributes_to_find_mean_for": {
         "tempo": {
-            "polynomial_degree": 3
+            "polynomial_degree": 3,
+            "value_parity": "positive"
         },
         "popularity": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
         },
         "duration_ms": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
+        },
+        "loudness": {
+            "polynomial_degree": 2,
+            "value_parity": "negative"
         },
         "energy": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
         },
         "danceability": {
-            "polynomial_degree": 1
+            "polynomial_degree": 1,
+            "value_parity": "positive"
         },
         "happiness": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
         },
         "acousticness": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
         },
         "instrumentalness": {
-            "polynomial_degree": 1
+            "polynomial_degree": 1,
+            "value_parity": "positive"
         },
         "liveness": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
         },
         "speechiness": {
-            "polynomial_degree": 2
+            "polynomial_degree": 2,
+            "value_parity": "positive"
         }
     }
 }

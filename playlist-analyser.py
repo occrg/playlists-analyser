@@ -99,6 +99,10 @@ def get_track_qualities(track_analysis_auth, track, previous_tracklist_data):
 
 def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklist_data):
     track_qualities = get_track_qualities(track_analysis_auth, track, previous_tracklist_data)
+
+    loudness = track_qualities["loudness"]
+    if isinstance(track_qualities["loudness"], str):
+        loudness  = int(float(track_qualities["loudness"][:-3]))
     
     track.update({
         "track_qualities": {
@@ -114,7 +118,7 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
             "instrumentalness": track_qualities["instrumentalness"],
             "liveness": track_qualities["liveness"],
             "speechiness": track_qualities["speechiness"],
-            "loudness": track_qualities["loudness"]
+            "loudness": loudness
         }
     })
 
@@ -179,7 +183,7 @@ def export_tracklist_to_csv(tracklist, playlist_data):
         this_tracklist.append(track["track_qualities"]["instrumentalness"])
         this_tracklist.append(track["track_qualities"]["liveness"])
         this_tracklist.append(track["track_qualities"]["speechiness"])
-        this_tracklist.append(track["track_qualities"]["loudness"][1:-3])
+        this_tracklist.append(track["track_qualities"]["loudness"])
 
         tracklist_csv.append(this_tracklist)
 
@@ -207,10 +211,15 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         fig, ax = plt.subplots()
         ax.scatter(xpoints, ypoints)
         ax.plot(x_for_trend_lines, predp)
-        ax.set_ylim(ymin=0.0)
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)
         ax.set_ylabel(key_name)
+
+        if attributes_to_find_mean_for[key_name]["value_parity"] == "negative":
+            ax.set_ylim(ymax = 0.0)
+        else:
+            ax.set_ylim(ymin=0.0)
+
         fig.savefig(OUTPUT_FOLDER_FILE_PATH + key_name + "_visualisation")
 
 def run_script():

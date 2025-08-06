@@ -199,11 +199,11 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
     xticks = list(range(len(playlist_names)))
     xpoints = np.array(xticks)
+    x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
     for key_name in attributes_to_find_mean_for.keys():
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
         ypoints = np.array(mean_values)
 
-        x_for_trend_lines = np.arange(0, len(playlist_names), 0.01)
         polyreg = np.polyfit(xpoints, ypoints, attributes_to_find_mean_for[key_name]["polynomial_degree"])
         polypred = np.poly1d(polyreg)
         predp = polypred(x_for_trend_lines)

@@ -212,8 +212,8 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         predp = polypred(x_for_trend_lines)
 
         fig, ax = plt.subplots()
-        ax.scatter(xpoints, ypoints)
-        ax.plot(x_for_trend_lines, predp)
+        ax.scatter(xpoints, ypoints, color=attributes_to_find_mean_for[key_name]["colour"])
+        ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)
         ax.set_ylabel(key_name)

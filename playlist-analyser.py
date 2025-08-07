@@ -223,7 +223,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         else:
             ax.set_ylim(ymin=0.0)
 
-        fig.savefig(OUTPUT_FOLDER_FILE_PATH + key_name + "_visualisation")
+        fig.savefig(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation")
 
 def run_script():
     with open(ENV_VARIABLES_FILE_PATH, "r") as file:

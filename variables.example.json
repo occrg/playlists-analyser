@@ -21,21 +21,25 @@
     "attributes_to_find_mean_for": {
         "tempo": {
             "make_graph": true,
+            "graph_order": 0,
             "polynomial_degree": 3,
             "value_parity": "positive"
         },
         "popularity": {
             "make_graph": true,
+            "graph_order": 1,
             "polynomial_degree": 2,
             "value_parity": "positive"
         },
         "duration_min": {
             "make_graph": true,
+            "graph_order": 2,
             "polynomial_degree": 2,
             "value_parity": "positive"
         },
         "loudness": {
             "make_graph": true,
+            "graph_order": 3,
             "polynomial_degree": 2,
             "value_parity": "negative"
         },
@@ -49,6 +53,7 @@
         },
         "happiness": {
             "make_graph": true,
+            "graph_order": 4,
             "polynomial_degree": 2,
             "value_parity": "positive"
         },

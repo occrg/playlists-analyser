@@ -201,7 +201,9 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     xticks = list(range(len(playlist_names)))
     xpoints = np.array(xticks)
     x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
-    for key_name in attributes_to_find_mean_for.keys():
+    filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
+
+    for key_name in filtered_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
         ypoints = np.array(mean_values)
 

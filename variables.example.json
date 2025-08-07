@@ -20,47 +20,52 @@
     ],
     "attributes_to_find_mean_for": {
         "tempo": {
+            "make_graph": true,
             "polynomial_degree": 3,
             "value_parity": "positive"
         },
         "popularity": {
+            "make_graph": true,
             "polynomial_degree": 2,
             "value_parity": "positive"
         },
         "duration_min": {
+            "make_graph": true,
             "polynomial_degree": 2,
             "value_parity": "positive"
         },
         "loudness": {
+            "make_graph": true,
             "polynomial_degree": 2,
             "value_parity": "negative"
         },
         "energy": {
-            "polynomial_degree": 2,
+            "make_graph": false,
             "value_parity": "positive"
         },
         "danceability": {
-            "polynomial_degree": 1,
+            "make_graph": false,
             "value_parity": "positive"
         },
         "happiness": {
+            "make_graph": true,
             "polynomial_degree": 2,
             "value_parity": "positive"
         },
         "acousticness": {
-            "polynomial_degree": 2,
+            "make_graph": false,
             "value_parity": "positive"
         },
         "instrumentalness": {
-            "polynomial_degree": 1,
+            "make_graph": false,
             "value_parity": "positive"
         },
         "liveness": {
-            "polynomial_degree": 2,
+            "make_graph": false,
             "value_parity": "positive"
         },
         "speechiness": {
-            "polynomial_degree": 2,
+            "make_graph": false,
             "value_parity": "positive"
         }
     }

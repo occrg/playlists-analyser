@@ -27,7 +27,7 @@
             "polynomial_degree": 2,
             "value_parity": "positive"
         },
-        "duration_ms": {
+        "duration_min": {
             "polynomial_degree": 2,
             "value_parity": "positive"
         },

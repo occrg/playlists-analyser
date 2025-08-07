@@ -111,6 +111,7 @@ def add_track_quality_to_tracklist(track_analysis_auth, track, previous_tracklis
             "tempo": track_qualities["tempo"],
             "popularity": track["track"]["popularity"],
             "duration_ms": track["track"]["duration_ms"],
+            "duration_min": track["track"]["duration_ms"] / 60000,
             "energy": track_qualities["energy"],
             "danceability": track_qualities["danceability"],
             "happiness": track_qualities["happiness"],
@@ -175,7 +176,7 @@ def export_tracklist_to_csv(tracklist, playlist_data):
         this_tracklist.append(track["track_qualities"]["mode"])
         this_tracklist.append(track["track_qualities"]["tempo"])
         this_tracklist.append(track["track_qualities"]["popularity"])
-        this_tracklist.append(track["track_qualities"]["duration_ms"] / 60000)
+        this_tracklist.append(track["track_qualities"]["duration_min"])
         this_tracklist.append(track["track_qualities"]["energy"])
         this_tracklist.append(track["track_qualities"]["danceability"])
         this_tracklist.append(track["track_qualities"]["happiness"])

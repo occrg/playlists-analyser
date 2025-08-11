@@ -27,7 +27,6 @@ The tracklist data exports to a csv so visualisations can be experimented with o
 ## To Do
 This is a list of things to do for the project, not including implementing the "future functionality" above.
 1. Change chart positioning, gridlines and legends to be appropriate so the graphs can be look good when stacked on top of each other.
-    1. Create a PNG of all graphs overlapping each other to see what final product would look like.
     1. Allow customisation of what numbers y-axis starts and finishes on.
     1. Offset legend position based on order of attribute.
     1. Offset y-axis tick labels by appropriate amount. Allow customisation if necessary.

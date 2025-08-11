@@ -8,6 +8,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from PIL import Image
 
 SPOTIFY_API_URL = "https://api.spotify.com/v1/"
 SPOTIFY_API_PLAYLIST_ENDPOINT_URL = SPOTIFY_API_URL + "playlists/"
@@ -196,14 +197,18 @@ def export_tracklist_to_json_file(tracklist):
     with open(TRACKLIST_DATA_FILE_PATH, "w+") as file:
         file.write(json.dumps(tracklist))
 
+def get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for):
+    filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
+    sorted_attributes_to_find_mean_for = sorted(filtered_attributes_to_find_mean_for, key=lambda key_name: attributes_to_find_mean_for[key_name]["graph_order"])
+    return sorted_attributes_to_find_mean_for
+
 def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
     xticks = list(range(len(playlist_names)))
     xpoints = np.array(xticks)
     x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
     y_label_x_offset = 4
-    filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
-    sorted_attributes_to_find_mean_for = sorted(filtered_attributes_to_find_mean_for, key=lambda key_name: attributes_to_find_mean_for[key_name]["graph_order"])
+    sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
 
     for key_name in sorted_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
@@ -230,6 +235,26 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
 
         fig.savefig(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation")
 
+def stack_graphs(attributes_to_find_mean_for):
+    canvas = Image.new('RGBA', (700, 500), (255, 255, 255, 255))
+    sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
+    for key_name in sorted_attributes_to_find_mean_for:
+        current_image = Image.open(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")
+        current_image_rgba = current_image.convert("RGBA")
+        current_image_datas = current_image_rgba.getdata()
+
+        current_image_transparent_data = []
+        for n, item in enumerate(current_image_datas):
+            if item[0] == 255 and item[1] == 255 and item[2] == 255:
+                # storing a transparent value when we find a black colour
+                current_image_transparent_data.append((255, 255, 255, 0))
+            else:
+                current_image_transparent_data.append(item)
+
+        current_image_rgba.putdata(current_image_transparent_data)
+        canvas.paste(current_image_rgba, (0,0), current_image_rgba)
+    canvas.save(OUTPUT_FOLDER_FILE_PATH + "merged_graph.png")
+
 def run_script():
     with open(ENV_VARIABLES_FILE_PATH, "r") as file:
         env_vars = file.read()
@@ -245,5 +270,6 @@ def run_script():
 
     playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist, env_vars_json["attributes_to_find_mean_for"])
     visualise_playlist_data(playlist_data, env_vars_json["attributes_to_find_mean_for"])
+    stack_graphs(env_vars_json["attributes_to_find_mean_for"])
 
 run_script()

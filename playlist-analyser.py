@@ -201,9 +201,14 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     xticks = list(range(len(playlist_names)))
     xpoints = np.array(xticks)
     x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
+    y_label_x_offset = 4
+    print(attributes_to_find_mean_for.items())
     filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
+    print(filtered_attributes_to_find_mean_for)
+    sorted_attributes_to_find_mean_for = sorted(filtered_attributes_to_find_mean_for, key=lambda key_name: attributes_to_find_mean_for[key_name]["graph_order"])
+    print(sorted_attributes_to_find_mean_for)
 
-    for key_name in filtered_attributes_to_find_mean_for:
+    for key_name in sorted_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
         ypoints = np.array(mean_values)
 
@@ -217,6 +222,8 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)
         ax.set_ylabel(key_name)
+        ax.tick_params(axis="y",direction="in", pad=y_label_x_offset)
+        y_label_x_offset += 10
 
         if attributes_to_find_mean_for[key_name]["value_parity"] == "negative":
             ax.set_ylim(ymax = 0.0)

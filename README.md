@@ -27,6 +27,11 @@ The tracklist data exports to a csv so visualisations can be experimented with o
 ## To Do
 This is a list of things to do for the project, not including implementing the "future functionality" above.
 1. Change chart positioning, gridlines and legends to be appropriate so the graphs can be look good when stacked on top of each other.
+    1. Create a PNG of all graphs overlapping each other to see what final product would look like.
+    1. Allow customisation of what numbers y-axis starts and finishes on.
+    1. Offset legend position based on order of attribute.
+    1. Offset y-axis tick labels by appropriate amount. Allow customisation if necessary.
+    1. Allow customisation of legend names.
 1. Add error handling for API calls.
 1. Add limit to how many times the Track Analysis API can be called.
 1. Store data from [other Track Analysis API](https://rapidapi.com/music-metrics-music-metrics-default/api/spotify-audio-features-track-analysis), compare (including check whether happiness is the same as valence between different APIs) and use both in visualisations to see if either set of data produces better visualisations.

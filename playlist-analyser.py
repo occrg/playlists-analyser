@@ -202,11 +202,8 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     xpoints = np.array(xticks)
     x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
     y_label_x_offset = 4
-    print(attributes_to_find_mean_for.items())
     filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
-    print(filtered_attributes_to_find_mean_for)
     sorted_attributes_to_find_mean_for = sorted(filtered_attributes_to_find_mean_for, key=lambda key_name: attributes_to_find_mean_for[key_name]["graph_order"])
-    print(sorted_attributes_to_find_mean_for)
 
     for key_name in sorted_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
@@ -218,10 +215,11 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
 
         fig, ax = plt.subplots()
         ax.scatter(xpoints, ypoints, color=attributes_to_find_mean_for[key_name]["colour"])
-        ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
+        trend_line = ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
+        ax.legend(trend_line, [key_name], loc=1)
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)
-        ax.set_ylabel(key_name)
+        ax.set_ylabel("")
         ax.tick_params(axis="y",direction="in", pad=y_label_x_offset)
         y_label_x_offset += 10
 

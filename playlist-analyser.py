@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from PIL import Image
+from matplotlib.transforms import Bbox
 
 SPOTIFY_API_URL = "https://api.spotify.com/v1/"
 SPOTIFY_API_PLAYLIST_ENDPOINT_URL = SPOTIFY_API_URL + "playlists/"
@@ -201,6 +202,7 @@ def get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for):
     filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
     sorted_attributes_to_find_mean_for = sorted(filtered_attributes_to_find_mean_for, key=lambda key_name: attributes_to_find_mean_for[key_name]["graph_order"])
     return sorted_attributes_to_find_mean_for
+    
 
 def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
@@ -208,7 +210,10 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     xpoints = np.array(xticks)
     x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
     y_label_x_offset = 4
+    legend_y_position = 0.99
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
+
+    figure_bbox = Bbox([[0,0],[7.5,4.5]])
 
     for key_name in sorted_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
@@ -221,36 +226,40 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         fig, ax = plt.subplots()
         ax.scatter(xpoints, ypoints, color=attributes_to_find_mean_for[key_name]["colour"])
         trend_line = ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
-        ax.legend(trend_line, [key_name], loc=1)
+        legend = ax.legend(trend_line, [key_name], loc="upper left", bbox_to_anchor=(1.01, legend_y_position))
+        legend.get_frame().set_alpha(0)
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)
         ax.set_ylabel("")
         ax.tick_params(axis="y",direction="in", pad=y_label_x_offset)
+        
         y_label_x_offset += 10
+        legend_y_position -= 0.08
 
         if attributes_to_find_mean_for[key_name]["value_parity"] == "negative":
             ax.set_ylim(ymax = 0.0)
         else:
             ax.set_ylim(ymin=0.0)
 
-        fig.savefig(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation")
+        fig.savefig(
+            OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation",
+            bbox_inches=figure_bbox)
 
 def stack_graphs(attributes_to_find_mean_for):
-    canvas = Image.new('RGBA', (700, 500), (255, 255, 255, 255))
+    canvas = Image.new("RGBA", (750, 450), (255, 255, 255, 255))
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
     for key_name in sorted_attributes_to_find_mean_for:
         current_image = Image.open(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")
         current_image_rgba = current_image.convert("RGBA")
         current_image_datas = current_image_rgba.getdata()
-
+    
         current_image_transparent_data = []
         for n, item in enumerate(current_image_datas):
             if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                # storing a transparent value when we find a black colour
                 current_image_transparent_data.append((255, 255, 255, 0))
             else:
                 current_image_transparent_data.append(item)
-
+    
         current_image_rgba.putdata(current_image_transparent_data)
         canvas.paste(current_image_rgba, (0,0), current_image_rgba)
     canvas.save(OUTPUT_FOLDER_FILE_PATH + "merged_graph.png")

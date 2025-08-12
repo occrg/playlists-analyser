@@ -213,7 +213,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     legend_y_position = 0.99
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
 
-    figure_bbox = Bbox([[0,0],[7.5,4.5]])
+    figure_bbox = Bbox.from_bounds(-0.7,0,8.0,4.5)
 
     for key_name in sorted_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
@@ -233,7 +233,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         ax.set_ylabel("")
         ax.tick_params(axis="y",direction="in", pad=y_label_x_offset)
         
-        y_label_x_offset += 10
+        y_label_x_offset += 22
         legend_y_position -= 0.08
 
         if attributes_to_find_mean_for[key_name]["value_parity"] == "negative":
@@ -246,7 +246,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
             bbox_inches=figure_bbox)
 
 def stack_graphs(attributes_to_find_mean_for):
-    canvas = Image.new("RGBA", (750, 450), (255, 255, 255, 255))
+    canvas = Image.new("RGBA", (850, 450), (255, 255, 255, 255))
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
     for key_name in sorted_attributes_to_find_mean_for:
         current_image = Image.open(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")

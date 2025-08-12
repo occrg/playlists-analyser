@@ -204,7 +204,7 @@ def get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for):
     return sorted_attributes_to_find_mean_for
     
 
-def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
+def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualisation_title):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
     xticks = list(range(len(playlist_names)))
     xpoints = np.array(xticks)
@@ -213,7 +213,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
     legend_y_position = 0.99
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
 
-    figure_bbox = Bbox.from_bounds(-0.7,0,8.0,4.5)
+    figure_bbox = Bbox([[-0.7,0.0],[8.0,4.7]])
 
     for key_name in sorted_attributes_to_find_mean_for:
         mean_values = [dict["aggregated_track_qualities"][key_name]["mean"] for dict in playlist_data.values()]
@@ -224,6 +224,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         predp = polypred(x_for_trend_lines)
 
         fig, ax = plt.subplots()
+        plt.title(visualisation_title, pad=10)
         ax.scatter(xpoints, ypoints, color=attributes_to_find_mean_for[key_name]["colour"])
         trend_line = ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
         legend = ax.legend(trend_line, [attributes_to_find_mean_for[key_name]["display_name"]], loc="upper left", bbox_to_anchor=(1.01, legend_y_position))
@@ -246,7 +247,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
             bbox_inches=figure_bbox)
 
 def stack_graphs(attributes_to_find_mean_for):
-    canvas = Image.new("RGBA", (850, 450), (255, 255, 255, 255))
+    canvas = Image.new("RGBA", (850, 475), (255, 255, 255, 255))
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
     for key_name in sorted_attributes_to_find_mean_for:
         current_image = Image.open(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")
@@ -278,7 +279,7 @@ def run_script():
     export_tracklist_to_csv(tracklist, playlist_id_name_dict)
 
     playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist, env_vars_json["attributes_to_find_mean_for"])
-    visualise_playlist_data(playlist_data, env_vars_json["attributes_to_find_mean_for"])
+    visualise_playlist_data(playlist_data, env_vars_json["attributes_to_find_mean_for"], env_vars_json["visualisation_title"])
     stack_graphs(env_vars_json["attributes_to_find_mean_for"])
 
 run_script()

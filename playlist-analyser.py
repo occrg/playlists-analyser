@@ -226,7 +226,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         fig, ax = plt.subplots()
         ax.scatter(xpoints, ypoints, color=attributes_to_find_mean_for[key_name]["colour"])
         trend_line = ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
-        legend = ax.legend(trend_line, [key_name], loc="upper left", bbox_to_anchor=(1.01, legend_y_position))
+        legend = ax.legend(trend_line, [attributes_to_find_mean_for[key_name]["display_name"]], loc="upper left", bbox_to_anchor=(1.01, legend_y_position))
         legend.get_frame().set_alpha(0)
         ax.set_xlabel("Playlist")
         ax.set_xticks(xticks, playlist_names)

@@ -23,6 +23,7 @@
             "make_graph": true,
             "graph_order": 0,
             "polynomial_degree": 3,
+            "display_name": "Tempo (bpm)",
             "value_parity": "positive",
             "colour": "#4185f4",
             "max_y_tick": 160
@@ -31,6 +32,7 @@
             "make_graph": true,
             "graph_order": 1,
             "polynomial_degree": 2,
+            "display_name": "Popularity",
             "value_parity": "positive",
             "colour": "#ea4335",
             "max_y_tick": 60
@@ -39,6 +41,7 @@
             "make_graph": true,
             "graph_order": 2,
             "polynomial_degree": 2,
+            "display_name": "Duration (min)",
             "value_parity": "positive",
             "colour": "#fbbc04",
             "max_y_tick": 6
@@ -47,6 +50,7 @@
             "make_graph": true,
             "graph_order": 3,
             "polynomial_degree": 2,
+            "display_name": "Loudness (dB)",
             "value_parity": "negative",
             "colour": "#33a854",
             "max_y_tick": -12
@@ -63,6 +67,7 @@
             "make_graph": true,
             "graph_order": 4,
             "polynomial_degree": 2,
+            "display_name": "Happiness",
             "value_parity": "positive",
             "colour": "#8e7cc3",
             "max_y_tick": 60

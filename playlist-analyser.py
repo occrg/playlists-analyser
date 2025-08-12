@@ -237,9 +237,9 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for):
         legend_y_position -= 0.08
 
         if attributes_to_find_mean_for[key_name]["value_parity"] == "negative":
-            ax.set_ylim(ymax = 0.0)
+            ax.set_ylim(ymax=0.0, ymin=attributes_to_find_mean_for[key_name]["max_y_tick"])
         else:
-            ax.set_ylim(ymin=0.0)
+            ax.set_ylim(ymin=0.0, ymax=attributes_to_find_mean_for[key_name]["max_y_tick"])
 
         fig.savefig(
             OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation",

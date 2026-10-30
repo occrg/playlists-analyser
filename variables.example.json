@@ -19,6 +19,16 @@
         "4T1ZHc7xRNXTg2So1ZNWBc"
     ],
     "visualisation_title": "Top 10 Songs of the Year 2015-2024",
+    "visualisation_dimensions": {
+        "width": {
+            "start": -0.7,
+            "end": 8.0
+        },
+        "height": {
+            "start": 0.0,
+            "end": 4.7
+        }
+    },
     "attributes_to_find_mean_for": {
         "tempo": {
             "make_graph": true,

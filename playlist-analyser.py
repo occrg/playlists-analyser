@@ -203,6 +203,16 @@ def get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for):
     filtered_attributes_to_find_mean_for = [key_name for key_name in attributes_to_find_mean_for.keys() if attributes_to_find_mean_for[key_name]["make_graph"] == True]
     sorted_attributes_to_find_mean_for = sorted(filtered_attributes_to_find_mean_for, key=lambda key_name: attributes_to_find_mean_for[key_name]["graph_order"])
     return sorted_attributes_to_find_mean_for
+
+def calculate_y_label_x_offset_change(max_y_tick):
+    y_label_x_offset_change = 9
+
+    y_label_x_offset_change += len(str(abs(max_y_tick))) * 5
+
+    if max_y_tick < 0:
+        y_label_x_offset_change += 6
+
+    return y_label_x_offset_change
     
 
 def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualisation_title, visualisation_dimensisons):
@@ -238,7 +248,7 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualis
         ax.set_ylabel("")
         ax.tick_params(axis="y",direction="in", pad=y_label_x_offset)
         
-        y_label_x_offset += 22
+        y_label_x_offset += calculate_y_label_x_offset_change(attributes_to_find_mean_for[key_name]["max_y_tick"])
         legend_y_position -= 0.08
 
         if attributes_to_find_mean_for[key_name]["value_parity"] == "negative":
@@ -252,7 +262,6 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualis
 
 def stack_graphs(attributes_to_find_mean_for, visualisation_dimensisons):
     image_width = math.floor((visualisation_dimensisons["width"]["end"] - visualisation_dimensisons["width"]["start"]) * 100)
-    print(visualisation_dimensisons["width"]["end"], visualisation_dimensisons["width"]["start"],image_width)
     image_height = math.floor((visualisation_dimensisons["height"]["end"] - visualisation_dimensisons["height"]["start"]) * 100)
     canvas = Image.new("RGBA", (image_width, image_height), (255, 255, 255, 255))
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)

@@ -213,7 +213,6 @@ def calculate_y_label_x_offset_change(max_y_tick):
         y_label_x_offset_change += 6
 
     return y_label_x_offset_change
-    
 
 def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualisation_title, visualisation_dimensisons):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
@@ -260,25 +259,30 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualis
             OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation",
             bbox_inches=figure_bbox)
 
+def stack_image_on_canvs(canvas, filename):
+    current_image = Image.open(filename)
+    current_image_rgba = current_image.convert("RGBA")
+    current_image_datas = current_image_rgba.getdata()
+
+    current_image_transparent_data = []
+    for n, item in enumerate(current_image_datas):
+        if item[0] == 255 and item[1] == 255 and item[2] == 255:
+            current_image_transparent_data.append((255, 255, 255, 0))
+        else:
+            current_image_transparent_data.append(item)
+
+    current_image_rgba.putdata(current_image_transparent_data)
+    canvas.paste(current_image_rgba, (0,0), current_image_rgba)
+
+    return canvas
+
 def stack_graphs(attributes_to_find_mean_for, visualisation_dimensisons):
     image_width = math.floor((visualisation_dimensisons["width"]["end"] - visualisation_dimensisons["width"]["start"]) * 100)
     image_height = math.floor((visualisation_dimensisons["height"]["end"] - visualisation_dimensisons["height"]["start"]) * 100)
     canvas = Image.new("RGBA", (image_width, image_height), (255, 255, 255, 255))
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
     for key_name in sorted_attributes_to_find_mean_for:
-        current_image = Image.open(OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")
-        current_image_rgba = current_image.convert("RGBA")
-        current_image_datas = current_image_rgba.getdata()
-    
-        current_image_transparent_data = []
-        for n, item in enumerate(current_image_datas):
-            if item[0] == 255 and item[1] == 255 and item[2] == 255:
-                current_image_transparent_data.append((255, 255, 255, 0))
-            else:
-                current_image_transparent_data.append(item)
-    
-        current_image_rgba.putdata(current_image_transparent_data)
-        canvas.paste(current_image_rgba, (0,0), current_image_rgba)
+        canvas = stack_image_on_canvs(canvas, OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")
     canvas.save(OUTPUT_FOLDER_FILE_PATH + "merged_graph.png")
 
 def run_script():

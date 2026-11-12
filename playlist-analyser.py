@@ -214,6 +214,27 @@ def calculate_y_label_x_offset_change(max_y_tick):
 
     return y_label_x_offset_change
 
+def visualise_frame_and_x_axes_labels(playlist_data, visualisation_title, visualisation_dimensisons):
+    playlist_names = [dict["name"] for dict in playlist_data.values()]
+    xticks = list(range(len(playlist_names)))
+    xpoints = np.array(xticks)
+    x_for_trend_lines = np.arange(0, len(playlist_names)-1, 0.01)
+
+    figure_bbox = Bbox([
+        [visualisation_dimensisons["width"]["start"],visualisation_dimensisons["height"]["start"]],
+        [visualisation_dimensisons["width"]["end"],visualisation_dimensisons["height"]["end"]]
+    ])
+
+    fig, ax = plt.subplots()
+    plt.title(visualisation_title, pad=10)
+    ax.set_xlabel("Playlist")
+    ax.set_xticks(xticks, playlist_names)
+    ax.get_yaxis().set_visible(False)
+
+    fig.savefig(
+        OUTPUT_FOLDER_FILE_PATH + "visualisation_frame",
+        bbox_inches=figure_bbox)
+
 def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualisation_title, visualisation_dimensisons):
     playlist_names = [dict["name"] for dict in playlist_data.values()]
     xticks = list(range(len(playlist_names)))
@@ -236,16 +257,15 @@ def visualise_playlist_data(playlist_data, attributes_to_find_mean_for, visualis
         polypred = np.poly1d(polyreg)
         predp = polypred(x_for_trend_lines)
 
+        plt.rc('axes.spines', **{'bottom':False, 'left':False, 'right':False, 'top':False})
         fig, ax = plt.subplots()
-        plt.title(visualisation_title, pad=10)
         ax.scatter(xpoints, ypoints, color=attributes_to_find_mean_for[key_name]["colour"])
         trend_line = ax.plot(x_for_trend_lines, predp, color=attributes_to_find_mean_for[key_name]["colour"])
         legend = ax.legend(trend_line, [attributes_to_find_mean_for[key_name]["display_name"]], loc="upper left", bbox_to_anchor=(1.01, legend_y_position))
         legend.get_frame().set_alpha(0)
-        ax.set_xlabel("Playlist")
-        ax.set_xticks(xticks, playlist_names)
+        ax.get_xaxis().set_visible(False)
         ax.set_ylabel("")
-        ax.tick_params(axis="y",direction="in", pad=y_label_x_offset)
+        ax.tick_params(axis="y",direction="in", pad=y_label_x_offset, length=0)
         
         y_label_x_offset += calculate_y_label_x_offset_change(attributes_to_find_mean_for[key_name]["max_y_tick"])
         legend_y_position -= 0.08
@@ -280,6 +300,7 @@ def stack_graphs(attributes_to_find_mean_for, visualisation_dimensisons):
     image_width = math.floor((visualisation_dimensisons["width"]["end"] - visualisation_dimensisons["width"]["start"]) * 100)
     image_height = math.floor((visualisation_dimensisons["height"]["end"] - visualisation_dimensisons["height"]["start"]) * 100)
     canvas = Image.new("RGBA", (image_width, image_height), (255, 255, 255, 255))
+    canvas = stack_image_on_canvs(canvas, OUTPUT_FOLDER_FILE_PATH + "visualisation_frame.png")
     sorted_attributes_to_find_mean_for = get_sorted_attributes_to_find_mean_for(attributes_to_find_mean_for)
     for key_name in sorted_attributes_to_find_mean_for:
         canvas = stack_image_on_canvs(canvas, OUTPUT_FOLDER_FILE_PATH + str(attributes_to_find_mean_for[key_name]["graph_order"]) + "_" + key_name + "_visualisation.png")
@@ -299,6 +320,7 @@ def run_script():
     export_tracklist_to_csv(tracklist, playlist_id_name_dict)
 
     playlist_data = calculate_playlist_aggregated_qualities(playlist_id_name_dict, tracklist, env_vars_json["attributes_to_find_mean_for"])
+    visualise_frame_and_x_axes_labels(playlist_data, env_vars_json["visualisation_title"], env_vars_json["visualisation_dimensions"])
     visualise_playlist_data(playlist_data, env_vars_json["attributes_to_find_mean_for"], env_vars_json["visualisation_title"], env_vars_json["visualisation_dimensions"])
     stack_graphs(env_vars_json["attributes_to_find_mean_for"], env_vars_json["visualisation_dimensions"])
 
